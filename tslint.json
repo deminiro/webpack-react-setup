@@ -1,0 +1,27 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended", "tslint-plugin-prettier", "prettier"],
+  "jsRules": {
+    "no-unused-expression": true
+  },
+  "rules": {
+    "quotemark": [true, "single"],
+    "member-access": [false],
+    "ordered-imports": [false],
+    "max-line-length": [true, 100],
+    "member-ordering": [false],
+    "interface-name": [false],
+    "arrow-parens": false,
+    "strictFunctionTypes": false,
+    "object-literal-sort-keys": false,
+    "trailing-comma": [false],
+    "one-line": [false],
+    "no-console": [false, "log", "error"],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
+    "no-bitwise": [false],
+    "newline-before-return": [true],
+    "prettier": [true, "./.prettierrc"],
+    "react-hooks/exhaustive-deps": true
+  },
+  "rulesDirectory": ["tslint-plugin-prettier"]
+}

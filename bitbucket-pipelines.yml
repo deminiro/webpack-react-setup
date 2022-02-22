@@ -1,0 +1,41 @@
+definitions:
+  services:
+    docker:
+      memory: 2048
+  steps:
+    - step: &build_and_deploy
+        name: build, push and run new image
+        services:
+          - docker
+        caches:
+          - docker
+        script:
+          - docker build -t ${IMAGE_NAME} --build-arg ENVIRONMENT="$ENVIRONMENT" .
+          # use the pipe to push to AWS ECR (Ireland region)
+          - pipe: atlassian/aws-ecr-push-image:1.5.0
+            variables:
+              AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+              AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+              AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+              IMAGE_NAME: ${IMAGE_NAME}
+              TAGS: '${BITBUCKET_BRANCH} ${BITBUCKET_BUILD_NUMBER} latest'
+
+          - pipe: atlassian/aws-ecs-deploy:1.6.1
+            variables:
+              AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+              AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+              AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+              CLUSTER_NAME: ${CLUSTER_NAME}
+              SERVICE_NAME: ${SERVICE_NAME}
+              FORCE_NEW_DEPLOYMENT: 'true'
+
+pipelines:
+  branches:
+    'dev':
+      - step:
+          deployment: dev
+          <<: *build_and_deploy
+    'master':
+      - step:
+          deployment: prod
+          <<: *build_and_deploy
